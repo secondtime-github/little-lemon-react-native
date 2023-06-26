@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     ScrollView,
     View,
@@ -8,20 +8,56 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from './components/Header';
 import Checkbox from './components/Checkbox';
+import { LoginContext } from './components/LoginContext';
 
 const Profile = () => {
-    const [state, setState] = useState({
+    const { login, setLogin } = useContext(LoginContext);
+
+    const [info, setInfo] = useState({
         name: '',
         email: '',
-        phoeNumber: '',
-        login: true,
+        phoneNumber: '',
         orderStatuses: false,
         passwordChanges: false,
         specialOffers: false,
         newsletter: false,
     });
+
+    useEffect(() => {
+        discardChanges();
+    }, []);
+
+    const saveChanges = async () => {
+        try {
+            await AsyncStorage.setItem('@info_key', JSON.stringify(info));
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const discardChanges = async () => {
+        try {
+            const value = await AsyncStorage.getItem('@info_key');
+            if (value !== null) {
+                setInfo(JSON.parse(value));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const logout = async () => {
+        setLogin(false);
+        try {
+            await AsyncStorage.clear()
+            await AsyncStorage.setItem('@login_key', JSON.stringify(false));
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     return (
         <ScrollView>
@@ -52,23 +88,23 @@ const Profile = () => {
                     <Text style={styles.label}>Name</Text>
                     <TextInput
                         style={styles.input}
-                        value={state.name}
-                        onChangeText={text => setState({...state, name: text})}
+                        value={info.name}
+                        onChangeText={text => setInfo({ ...info, name: text })}
                         placeholder="Enter your name"
                     />
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
-                        value={state.email}
-                        onChangeText={text => setState({...state, email: text})}
+                        value={info.email}
+                        onChangeText={text => setInfo({ ...info, email: text })}
                         placeholder="Enter your email"
                         keyboardType="email-address"
                     />
                     <Text style={styles.label}>Phone number</Text>
                     <TextInput
                         style={styles.input}
-                        value={state.phoeNumber}
-                        onChangeText={text => setState({...state, phoeNumber: text})}
+                        value={info.phoneNumber}
+                        onChangeText={text => setInfo({ ...info, phoneNumber: text })}
                         placeholder="Enter your phone number"
                     />
                 </View>
@@ -77,40 +113,40 @@ const Profile = () => {
                     <Text style={styles.subtitle}>Email notifications</Text>
                     <Checkbox
                         label="Order statuses"
-                        initialChecked={state.orderStatuses}
-                        onChange={c => setState({...state, orderStatuses: c})}
+                        checked={info.orderStatuses}
+                        onChange={c => setInfo({ ...info, orderStatuses: c })}
                     />
                     <Checkbox
                         label="Password changes"
-                        initialChecked={state.passwordChanges}
-                        onChange={c => setState({...state, passwordChanges: c})}
+                        checked={info.passwordChanges}
+                        onChange={c => setInfo({ ...info, passwordChanges: c })}
                     />
                     <Checkbox
                         label="Special offers"
-                        initialChecked={state.specialOffers}
-                        onChange={c => setState({...state, specialOffers: c})}
+                        checked={info.specialOffers}
+                        onChange={c => setInfo({ ...info, specialOffers: c })}
                     />
                     <Checkbox
                         label="Newsletter"
-                        initialChecked={state.newsletter}
-                        onChange={c => setState({...state, newsletter: c})}
+                        checked={info.newsletter}
+                        onChange={c => setInfo({ ...info, newsletter: c })}
                     />
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => { }}
+                        onPress={logout}
                     >
                         <Text style={styles.buttonTextDark}>Log out</Text>
                     </TouchableOpacity>
                     <View style={styles.buttonGroup}>
                         <TouchableOpacity
                             style={styles.discardButton}
-                            onPress={() => { }}
+                            onPress={discardChanges}
                         >
                             <Text style={styles.buttonTextDark}>Discard changes</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.saveButton}
-                            onPress={() => { }}
+                            onPress={saveChanges}
                         >
                             <Text style={styles.buttonTextLight}>Save changes</Text>
                         </TouchableOpacity>

@@ -1,37 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Text,
     View,
     TextInput,
-    Button, TouchableOpacity,
-    Alert,
+    TouchableOpacity,
     StyleSheet
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import { LoginContext } from './components/LoginContext';
 
-const Onboarding = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
+const Onboarding = ({ route }) => {
+    const { login, setLogin } = useContext(LoginContext);
+    
+    const [info, setInfo] = useState({
+        name: '',
+        email: '',
+        phoneNumber: '',
+        orderStatuses: false,
+        passwordChanges: false,
+        specialOffers: false,
+        newsletter: false,
+    });
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     const nameRegEx = /^[a-zA-Z]+$/;
     const emailRegEx = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
     useEffect(() => {
-        if (nameRegEx.test(name) && emailRegEx.test(email)) {
+        if (nameRegEx.test(info.name) && emailRegEx.test(info.email)) {
             setIsButtonDisabled(false);
         } else {
             setIsButtonDisabled(true);
         }
-    }, [name, email]);
+    }, [info.name, info.email]);
 
-    const handleSubmit = () => {
-        if (isButtonDisabled) {
-            Alert.alert('Error', 'Please enter valid name and email.');
-            return;
+    const submit = async () => {
+        try {
+            await AsyncStorage.setItem('@login_key', JSON.stringify(true));
+            await AsyncStorage.setItem('@info_key', JSON.stringify(info));
+            await setLogin(true);
+        } catch (e) {
+            console.log(e);
         }
-        Alert.alert('Success', 'You have successfully completed the onboarding process!');
     };
 
     return (
@@ -43,15 +55,15 @@ const Onboarding = () => {
                 <Text style={styles.label}>Name*</Text>
                 <TextInput
                     style={styles.input}
-                    value={name}
-                    onChangeText={setName}
+                    value={info.name}
+                    onChangeText={text => setInfo({ ...info, name: text })}
                     placeholder="Enter your name"
                 />
                 <Text style={styles.label}>Email*</Text>
                 <TextInput
                     style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
+                    value={info.email}
+                    onChangeText={text => setInfo({ ...info, email: text })}
                     placeholder="Enter your email"
                     keyboardType="email-address"
                 />
@@ -60,7 +72,7 @@ const Onboarding = () => {
                     style={isButtonDisabled
                         ? styles.buttonDisabled
                         : styles.button}
-                    onPress={handleSubmit}
+                    onPress={submit}
                     disabled={isButtonDisabled}
                 >
                     <Text style={styles.buttonText}>Next</Text>

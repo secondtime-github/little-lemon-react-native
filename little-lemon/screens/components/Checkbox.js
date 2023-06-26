@@ -1,16 +1,8 @@
-import React, { useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 
-
-const Checkbox = ({ label, onChange, initialChecked }) => {
-  const [checked, setChecked] = useState(initialChecked);
-
+const Checkbox = ({ label, checked, onChange }) => {
   const toggleCheckbox = () => {
-    const newCheckedValue = !checked;
-    setChecked(newCheckedValue);
-    if (onChange) {
-      onChange(newCheckedValue);
-    }
+    onChange(!checked);
   };
 
   return (
