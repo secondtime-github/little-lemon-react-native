@@ -19,8 +19,8 @@ const Hero = () => {
                 </View>
                 <Image
                     style={styles.image}
-                    source={require('../assets/Hero_image.png')}
-                    resizeMethod='contain'
+                    source={require('../../assets/Hero_image.png')}
+                    resizeMode='center'
                 />
             </View>
         </View>

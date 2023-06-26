@@ -5,7 +5,7 @@ const Header = () => {
         <View style={styles.header}>
             <Image
                 style={styles.logo}
-                source={require('../assets/Logo.png')}
+                source={require('../../assets/Logo.png')}
                 resizeMode='contain'
             />
         </View>
@@ -14,7 +14,7 @@ const Header = () => {
 
 const styles = StyleSheet.create({
     header: {
-        paddingTop: 50,
+        // paddingTop: 50,
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
