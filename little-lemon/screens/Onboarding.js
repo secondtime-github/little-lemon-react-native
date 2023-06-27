@@ -11,9 +11,9 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import { LoginContext } from './components/LoginContext';
 
-const Onboarding = ({ route }) => {
+const Onboarding = () => {
     const { login, setLogin } = useContext(LoginContext);
-    
+
     const [info, setInfo] = useState({
         name: '',
         email: '',
